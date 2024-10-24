@@ -6,5 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(libtcod CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 
 add_subdirectory(src)

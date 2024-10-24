@@ -205,3 +205,112 @@ This is a slight modification of the previous program:
 2. we use the read key value in a switch statement to modify `playerx`, `playery`. When you press one of the arrow-keys, the coordinats are modified. Please note, up is negative y - which might not be intuitive. This is the opposite direction from the coordinate systems you know from math classes.
 
 Compile and run. Now you can move the `@` sign across the screen.
+
+### modernizing to the new API
+
+The old tutorial was written against an older version of libtcod. The current version (1.24.0) of the library deprecated many of the used APIs and provided some migration information. The major differences is the existance of contexts and using the SDL event loop and not the libtcod event mechanism. To modernize to the new API, the following modifications need to be done:
+
+**Extend vcpkg.json to include SDL2**
+
+```json
+{
+    "dependencies": [
+        {
+            "name": "libtcod",
+            "features": [ "unicode", "sdl" ]
+        },
+        "sdl2"
+    ]
+}
+```
+**link against SDL2**
+
+root CMakeLists.txt:
+```
+find_package(SDL2 CONFIG REQUIRED)
+```
+
+application CMakeLists.txt:
+```
+# modernizing to libtcod 1.24.0
+add_executable(lesson1c)
+target_sources(lesson1c PRIVATE main.cpp)
+target_link_libraries(lesson1c 
+	PRIVATE 
+		libtcod::libtcod
+		$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+		$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+```
+The link command looks strange since it uses CMake generate expressions. There's no need for deeper understanding of this in the tutorial - the code was taken from the install information that vcpkg provides when running install.
+
+**the updated code**
+
+```c++
+#include <SDL.h>
+#include "libtcod.hpp"
+
+//modernized according to: https://libtcod.readthedocs.io/en/latest/guides/getting-started.html#getting-started
+int main(int argc, char** argv) {
+    auto console = tcod::Console{ 80, 50 };
+
+	auto params = TCOD_ContextParams{};
+	params.tcod_version = TCOD_COMPILEDVERSION; //required by library
+	params.console = console.get(); //derive the window size from the console size
+	params.window_title = "libtcod C++ tutorial";
+	params.sdl_window_flags = SDL_WINDOW_RESIZABLE; //optional
+	params.vsync = true;
+	params.argc = argc;
+	params.argv = argv;
+
+	auto context = tcod::Context{ params };
+
+    int playerx = 40, playery = 25;
+    while (true)
+    {
+        //render
+        TCOD_console_clear(console.get());
+        tcod::print(console, { playerx, playery }, "@", { {255,255,255} }, { { 0,0,0 } });
+        context.present(console);
+
+		//process input
+		SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+            case SDL_QUIT:
+                std::exit(0);
+                break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_UP: playery--; break;
+                case SDLK_DOWN: playery++; break;
+                case SDLK_LEFT: playerx--; break;
+                case SDLK_RIGHT: playerx++; break;
+                default: break;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    return 0;
+}
+```
+
+Explanation:
+- `#include <SDL.h>`: required since we need SDL2 for processing the events.
+- `int main(int argc, char** argv)`: this version of main allows processing of command line arguments. In this example they can be used to configure the SDL window.
+- `auto console = tcod::Console{80, 50};`: constructs a `tcod::Console` object. `tcod` is a namespace that avoids name collisions with other libraries or your program. `auto` means that the compiler should deduce the actual type of the object here and use that so that you don't have to write it out.
+- `auto params = ...`: The whole `params` section configures the window to be shown.
+- `auto context = ...`: creates a context object. The context allows interaction with the window. Most important here - rendering the content of the console to screen.
+- `while (true) {}`: the game loop. Now as infinite loop. Exit from the loop is done during event handling.
+- `TCOD_console_clear(console.get());`: clears the console
+- `tcod::print(console, { playerx, playery }, "@", { {255,255,255} }, { { 0,0,0 } });`: writes a string to the console at the givven row/colum (these are not pixels). It can handle multiple characters and unicode. The odd looking number-triples are optional colors as RGB. They require two sets of braces because they can also be empty - in this case the current color will be used.
+- `context.present(console);`: renders the contents of the console to the window represented by the context.
+- `while (SDL_PollEvent(&event))`: event handling with SDL2. Here as loop to handle all events that happened during the previous cycle of the game loop. If you have no animation (e.g. all changes to the screen are caused by some key/mouse events), you can use `SDL_WaitEvent(nullptr);` before the while loop to sleep until the next event. Here `SDL_QUIT` handles the windows close by calling `std::exit(0)` to exit the application with exit code 0. The rest ist keyboard event handling using SDL2 with the SDL2 instead of the libtcod constants and functions.
+
+
