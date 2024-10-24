@@ -9,6 +9,11 @@ It uses
 - vcpkg
 - C++20
 
+## License
+
+The original tutorial was written by [Jice](https://www.roguebasin.com/index.php/Jice) and published under the [**Creative Commons Attribution-ShareAlike 3.0 Unported**](https://creativecommons.org/licenses/by-sa/3.0/deed.en).
+This is a changed version of the original tutorial and published under the [**Creative Commons Attribution-ShareAlike 3.0 Unported**](https://creativecommons.org/licenses/by-sa/3.0/deed.en) as well.
+
 ## Lessons
 
 1. [Setting Up](docs/Lesson_1.md)
