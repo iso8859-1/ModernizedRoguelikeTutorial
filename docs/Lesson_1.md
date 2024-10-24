@@ -138,7 +138,7 @@ target_link_libraries(lesson1 PRIVATE libtcod::libtcod)
 
 After you have done these changes, you should re-compile and see if your application still works the way it should (print "Hello World!")
 
-### using libtcod
+### using libtcod (Lesson 1a)
 
 Change your `main.cpp` to the following:
 
@@ -149,7 +149,7 @@ int main() {
     TCODConsole::initRoot(80,50,"libtcod C++ tutorial",false);
     while ( !TCODConsole::isWindowClosed() ) {
         TCOD_key_t key;
-        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,nullptr);
         TCODConsole::root->clear();
         TCODConsole::root->putChar(40,25,'@');
         TCODConsole::flush();
@@ -158,3 +158,50 @@ int main() {
 }
 ```
 
+**Explanation**
+
+- `#include "libtcod.hpp"`: imports the symbols (classes, functions, ...) from libtcod. This makes the compiler aware what is available in libtcod when compiling this file.
+- `int main()`: the main entry point of your application. In a executable, there must be a single main function.
+- `TCODConsole::initRoot`: a static function that initializes the display. It is an 80 character width, 50 character height console created in a new window with the title "libcod C++ tutorial". It uses the default font and the `false` indicates that it does not start in fullscreen mode. You can play around with those values and see how the behavior of the application changes.
+- `while(!TCODConsole::isWindowClosed()) { <loop content> }`: this is a while loop. A while loop checks the condition inside the () and if true, runs the code inside the {}. Once that is done, it checks the condition again and runs it again if true. If false, it continues after the }. This while-loop is called the *game loop*. The game loop is run as fast as possible to allow for a smooth game. Every run of the game loop refreshes the screen one time. The condition states that it is run until the window is closed.
+- `TCOD_key_t key;`: defines a variable that will hold which key was pressed.
+- `TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL);`: libtcod requires this function to be called to process screen redraw events. The address of the previously generated variable `key` is passed into the function. This allows the event function to write into the variable. The last parameter allows mouse processing, but isn't used in this program.  
+- `TCODConsole::root->clear()`: accesses the global object `root` and calls the function `clear()` on it. `root` contains the console bound to the main window. `clear()`clears the screen.
+- `TCODConsole::root->putChar(40,25,'@')`: writes the character `@` at location 40, 25 on the screen (in the middle)
+- `TCODConsole::flush()`: To speed up drawing, all drawing commands are stored in a buffer. `flush()` actually takes the stored drawings and brings them to the screen.
+
+Compile and run the program and you'll see an @ character in the middle of a black window.
+
+### the walking '@'
+
+Now modify (or create a new project) the contents of `main.cpp` to contain this:
+
+```c++
+#include "libtcod.hpp"
+int main() {
+    int playerx = 40, playery = 25;
+    TCODConsole::initRoot(80, 50, "libtcod C++ tutorial", false);
+    while (!TCODConsole::isWindowClosed()) {
+        TCOD_key_t key;
+        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr);
+        switch (key.vk) {
+        case TCODK_UP: playery--; break;
+        case TCODK_DOWN: playery++; break;
+        case TCODK_LEFT: playerx--; break;
+        case TCODK_RIGHT: playerx++; break;
+        default:break;
+        }
+        TCODConsole::root->clear();
+        TCODConsole::root->putChar(playerx, playery, '@');
+        TCODConsole::flush();
+    }
+    return 0;
+}
+```
+
+This is a slight modification of the previous program:
+
+1. the `@` is drawn at the location of the variables `playerx` and `playery`.
+2. we use the read key value in a switch statement to modify `playerx`, `playery`. When you press one of the arrow-keys, the coordinats are modified. Please note, up is negative y - which might not be intuitive. This is the opposite direction from the coordinate systems you know from math classes.
+
+Compile and run. Now you can move the `@` sign across the screen.

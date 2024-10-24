@@ -4,7 +4,7 @@ int main() {
     TCODConsole::initRoot(80, 50, "libtcod C++ tutorial", false);
     while (!TCODConsole::isWindowClosed()) {
         TCOD_key_t key;
-        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL);
+        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, nullptr);
         switch (key.vk) {
         case TCODK_UP: playery--; break;
         case TCODK_DOWN: playery++; break;
