@@ -18,3 +18,4 @@ This is a changed version of the original tutorial and published under the [**Cr
 ## Lessons
 
 1. [Setting Up](docs/Lesson_1.md)
+2. [Map and Actors](docs/Lesson_2.md)
