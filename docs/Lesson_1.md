@@ -94,3 +94,67 @@ Once everything is set-up as above:
 - If it wasn't a success, you need to read the output and try to fix the error. Check your installation. Check all the steps above and the contents of the files. Try opening this repository instead and see if that succeeds. If it does, there is an error in your code. If it doesn't, there's probably an error in your installation.
 
 ## Using LibTCOD
+
+### linking libtcod
+
+To be able to link libtcod to your application, you need to do the following steps:
+
+1. Add libtcod to your dependencies. It should look similar to this:
+
+```json
+{
+    "dependencies": [
+        {
+            "name": "libtcod",
+            "features": ["unicode", "sdl"]
+        }
+    ]
+}
+```
+The dependencies json-array contains all the libraries that you want to use in any application/library of your build. If you don't want to set any features, you can simply add a string with the library name in the dependencies array. If you want to enable certain features, it needs to be done like shown above. Here we enable the features `unicode` and `sdl` from libtcod. The features for each library can be looked-up on https://vcpkg.io in the package database.
+
+2. Use `find_package` to find libtcod. If you followed the steps above, you just need to remove the `#` sign in your root CMakelists.txt
+
+```
+cmake_minimum_required(VERSION 3.19)
+project(RogueLikeTutorial)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+find_package(libtcod CONFIG REQUIRED)
+
+add_subdirectory(src)
+```
+
+3. Use `target_link_libraries` to link against libtcod. If you followed the steps above, you just need to remove the `#` sign in your application CMakelists.txt
+
+```
+add_executable(lesson1)
+target_sources(lesson1 PRIVATE main.cpp)
+target_link_libraries(lesson1 PRIVATE libtcod::libtcod)
+```
+
+After you have done these changes, you should re-compile and see if your application still works the way it should (print "Hello World!")
+
+### using libtcod
+
+Change your `main.cpp` to the following:
+
+```c++
+#include "libtcod.hpp"
+
+int main() {
+    TCODConsole::initRoot(80,50,"libtcod C++ tutorial",false);
+    while ( !TCODConsole::isWindowClosed() ) {
+        TCOD_key_t key;
+        TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
+        TCODConsole::root->clear();
+        TCODConsole::root->putChar(40,25,'@');
+        TCODConsole::flush();
+    }
+    return 0;
+}
+```
+
