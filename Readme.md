@@ -11,4 +11,4 @@ It uses
 
 ## Lessons
 
-1. [Setting Up](docs/Lession_1.md)
+1. [Setting Up](docs/Lesson_1.md)
