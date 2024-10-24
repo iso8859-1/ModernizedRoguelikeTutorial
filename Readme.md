@@ -8,6 +8,7 @@ It uses
 - CMake
 - vcpkg
 - C++20
+- libtcod 1.24.0
 
 ## License
 
