@@ -8,7 +8,7 @@ This tutorial tries to be platform independent. CMake and vcpkg exist for all pl
 
 1. Install Visual Studio (https://visualstudio.microsoft.com/de/downloads/). The Community version is free and sufficient. Make sure to install the "Desktop Development with C++" workload and ensure in "Individual Components" that `vcpkg` and `CMake` are installed. This will install the Visual Studio IDE (= Integrated Development Environment). It is an application that integrates a text editor for editing the source code, a build tool (CMake), a package manager (vcpkg) and a debugger.
 2. Open the `x64 Native Tools Command Prompt` and execute `vcpkg integrate install`. This integrates vcpkg into Visual Studio.
-3. (Optional) Install `git` (https://visualstudio.microsoft.com/de/downloads/). Git is the defacto standard version control system. Don't do software development without a version control system. It allows you to try thing out and revert all changes in case you messed up. Visual Studio contains a git client that allows you to work with git without using the command line. Check the documentation to understand the basics.
+3. (Optional) Install `git` (https://visualstudio.microsoft.com/de/downloads/). Git is the defacto standard version control system. Don't do software development without a version control system. It allows you to try things out and revert all changes in case you messed up. Visual Studio contains a git client that allows you to work with git without using the command line. Check the documentation to understand the basics.
 
 Now you are ready to write C++ applications.
 
