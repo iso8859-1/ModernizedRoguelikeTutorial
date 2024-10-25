@@ -23,7 +23,6 @@ int main(int argc, char** argv) {
 
 	Engine engine(width, height);
 
-    int playerx = 40, playery = 25;
     while (true)
     {
 		engine.update();
